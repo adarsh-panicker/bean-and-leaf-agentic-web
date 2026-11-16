@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1001,
+    "items": "Artisanal Oat Milk Latte, French Butter Croissant",
+    "total": 8.25,
+    "time": "2026-11-16T08:15:00Z",
+    "status": "ready",
+    "source": "Browser Client"
+  },
+  {
+    "id": 1002,
+    "items": "Caffè Americano, Gluten-Free Wild Blueberry Muffin",
+    "total": 7.75,
+    "time": "2026-11-16T09:02:00Z",
+    "status": "ready",
+    "source": "Agent (Otari Router)"
+  },
+  {
+    "id": 1003,
+    "items": "Ceremonial Matcha Latte, Double Dark Chocolate Chunk Cookie",
+    "total": 9.00,
+    "time": "2026-11-16T09:45:00Z",
+    "status": "brewing",
+    "source": "Agent (Autonomous Morning Assistant)"
+  }
+]

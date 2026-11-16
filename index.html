@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bean & Leaf Coffee — Open Agentic Web</title>
+<!-- Open Agentic Web Machine-Readable Auto-Discovery Link -->
+<link rel="agent-manifest" type="application/json" href="agent-manifest.json">
+<style>
+  :root {
+    --bg: #f8f6f1;
+    --card-bg: #ffffff;
+    --primary: #3e2723;
+    --primary-light: #5d4037;
+    --accent: #d7a15c;
+    --accent-light: #fbeedb;
+    --text: #2d241c;
+    --text-muted: #6d5b4c;
+    --border: #e3dacd;
+    --success: #2e7d32;
+    --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font); margin: 0; background: var(--bg); color: var(--text); line-height: 1.5; }
+  
+  /* Header */
+  header {
+    background: var(--primary);
+    color: #fff;
+    padding: 1.1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .header-left { display: flex; align-items: center; gap: 0.75rem; }
+  .header-left h1 { margin: 0; font-size: 1.35rem; letter-spacing: 0.4px; }
+  .tag {
+    font-size: 0.78rem;
+    background: rgba(255,255,255,0.14);
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .header-cta {
+    background: #fff;
+    color: var(--primary);
+    padding: 0.55rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .header-cta:hover { background: #f0eae1; transform: translateY(-1px); }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #3e2723 0%, #5d4037 60%, #4e342e 100%);
+    color: #fff;
+    padding: 3.5rem 2rem;
+    text-align: center;
+    border-bottom: 4px solid var(--accent);
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(215, 161, 92, 0.25);
+    border: 1px solid var(--accent);
+    color: #ffe0b2;
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .hero h2 { margin: 0 0 1rem 0; font-size: 2.1rem; line-height: 1.25; }
+  .hero p { margin: 0 auto 1.75rem auto; opacity: 0.95; font-size: 1.1rem; max-width: 680px; }
+  .hero-buttons { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent);
+    color: #2e1a0b;
+    border: none;
+    padding: 0.85rem 1.75rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: #e5b375; transform: translateY(-2px); }
+  .btn-secondary {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 0.85rem 1.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+  /* Feature Grid */
+  .grid-section { max-width: 1100px; margin: 3rem auto; padding: 0 1.5rem; }
+  .section-title { text-align: center; margin-bottom: 2rem; }
+  .section-title h3 { margin: 0; font-size: 1.5rem; color: var(--primary); }
+  .section-title p { margin: 0.4rem 0 0 0; color: var(--text-muted); font-size: 0.95rem; }
+  .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .agent-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .agent-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .agent-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .agent-card h4 { margin: 0 0 0.4rem 0; font-size: 1.05rem; color: var(--primary); }
+  .agent-card p { margin: 0 0 1rem 0; font-size: 0.85rem; color: var(--text-muted); flex: 1; }
+  .agent-tag {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: #efebe9;
+    color: var(--primary-light);
+    font-weight: 600;
+    align-self: flex-start;
+  }
+
+  /* Spec & Transparency Section */
+  .spec-section {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto 3rem auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .spec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+  .spec-header h3 { margin: 0; color: var(--primary); font-size: 1.2rem; }
+  .spec-tabs { display: flex; gap: 0.5rem; }
+  .spec-tab-btn {
+    background: #f7f5f0;
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary-light);
+  }
+  .spec-tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  pre {
+    background: #fdfcf9;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    overflow-x: auto;
+    color: #3e2723;
+    max-height: 380px;
+  }
+
+  /* Highlights Bar */
+  .highlights {
+    background: #f5eee6;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+  }
+  .highlights-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    text-align: center;
+  }
+  .hl-item h5 { margin: 0 0 0.35rem 0; font-size: 1rem; color: var(--primary); }
+  .hl-item p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    background: #fff;
+  }
+  footer a { color: var(--primary-light); font-weight: 600; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>☕ Bean & Leaf Coffee</h1>
+    <span class="tag">Open Agentic Web • 5 Agents</span>
+  </div>
+  <a href="runtime.html" class="header-cta">Open Agent Runtime →</a>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">Built for the Open Agentic Web Challenge</div>
+  <h2>Neighborhood Coffee, Reimagined for the Agentic Web</h2>
+  <p>
+    A publicly accessible, decentralized agent network where customers and external AI agents can check hours,
+    filter dietary items, book tables, and place pickup orders — running 100% in-browser with zero inference costs for the shop.
+  </p>
+  <div class="hero-buttons">
+    <a href="runtime.html" class="btn-primary">Launch Agent Chat & Runtime →</a>
+    <a href="runtime.html#board" class="btn-secondary" onclick="sessionStorage.setItem('openTab','board')">View Live Order Board</a>
+  </div>
+</div>
+
+<div class="highlights">
+  <div class="highlights-inner">
+    <div class="hl-item">
+      <h5>Zero Server Cost (BYOK)</h5>
+      <p>Visitors supply their own LLM key (OpenAI, Gemini, Anthropic, Ollama, or Mock). The shop pays $0 for AI tokens.</p>
+    </div>
+    <div class="hl-item">
+      <h5>Machine Discoverable</h5>
+      <p>Standard <code>agent-manifest.json</code> lets Siri, Otari, or other personal agents automatically find and book services.</p>
+    </div>
+    <div class="hl-item">
+      <h5>Public State Board</h5>
+      <p>Incoming tickets stream into <code>orders.json</code>, enabling transparent order tracking across the open web.</p>
+    </div>
+    <div class="hl-item">
+      <h5>Browser Sandbox Privacy</h5>
+      <p>All inference runs on the client device. Customer data and API keys never touch our servers.</p>
+    </div>
+  </div>
+</div>
+
+<div class="grid-section">
+  <div class="section-title">
+    <h3>The 5-Agent Network</h3>
+    <p>Declaratively configured agents specialized in everyday café operations</p>
+  </div>
+  <div class="agent-grid">
+    <div class="agent-card">
+      <div class="agent-icon">☕</div>
+      <h4>Coffee Concierge</h4>
+      <p>Front-desk host. Understands intent and seamlessly coordinates with specialists.</p>
+      <span class="agent-tag">role: front_man</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon">🕐</div>
+      <h4>Hours Agent</h4>
+      <p>Real-time opening status, holiday schedules, and closing countdowns.</p>
+      <span class="agent-tag">hours • open-status</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon">📖</div>
+      <h4>Menu Agent</h4>
+      <p>Full catalog with certified vegan, gluten-free, and dairy-free filters.</p>
+      <span class="agent-tag">browse • dietary-filter</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon">🧾</div>
+      <h4>Order Agent</h4>
+      <p>Validates cart, calculates totals, and publishes tickets to the public board.</p>
+      <span class="agent-tag">take-order • pickup-ticket</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon">🪑</div>
+      <h4>Reservation Agent</h4>
+      <p>Table bookings across indoor booths and patio seating for up to 24 guests.</p>
+      <span class="agent-tag">check-capacity • book-table</span>
+    </div>
+  </div>
+</div>
+
+<div class="spec-section">
+  <div class="spec-header">
+    <h3>Open Agentic Web Manifest & Public State</h3>
+    <div class="spec-tabs">
+      <button class="spec-tab-btn active" id="btnManifest" onclick="loadSpecView('manifest')">agent-manifest.json</button>
+      <button class="spec-tab-btn" id="btnOrders" onclick="loadSpecView('orders')">orders.json (Public Board)</button>
+    </div>
+  </div>
+  <pre id="specCodeBlock">Loading manifest data…</pre>
+</div>
+
+<footer>
+  Built for the <strong>Open Agentic Web Challenge</strong> • Cognizant AI Lab • Mozilla Otari • MIT Media Lab NANDA • AWS • Open Source.
+</footer>
+
+<script>
+let manifestData = null;
+let ordersData = null;
+
+async function loadData() {
+  try {
+    const resM = await fetch('agent-manifest.json');
+    if (resM.ok) manifestData = await resM.json();
+  } catch(e) {}
+  try {
+    const resO = await fetch('orders.json');
+    if (resO.ok) ordersData = await resO.json();
+  } catch(e) {}
+  loadSpecView('manifest');
+}
+
+function loadSpecView(type) {
+  document.getElementById('btnManifest').classList.toggle('active', type === 'manifest');
+  document.getElementById('btnOrders').classList.toggle('active', type === 'orders');
+  const pre = document.getElementById('specCodeBlock');
+  if (type === 'manifest') {
+    pre.textContent = manifestData ? JSON.stringify(manifestData, null, 2) : 'Error loading agent-manifest.json';
+  } else {
+    // Show either local orders or server orders
+    const local = localStorage.getItem('bean_and_leaf_orders_v1');
+    const display = local ? JSON.parse(local) : (ordersData || []);
+    pre.textContent = JSON.stringify(display, null, 2);
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>

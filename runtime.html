@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bean & Leaf Coffee — Agent Network Runtime</title>
+<link rel="agent-manifest" type="application/json" href="agent-manifest.json">
+<style>
+  :root {
+    --bg: #f8f6f1;
+    --card-bg: #ffffff;
+    --primary: #3e2723;
+    --primary-light: #5d4037;
+    --accent: #d7a15c;
+    --accent-light: #fbeedb;
+    --text: #2d241c;
+    --text-muted: #7d6b5c;
+    --border: #e3dacd;
+    --success: #2e7d32;
+    --success-bg: #e8f5e9;
+    --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font); margin: 0; background: var(--bg); color: var(--text); }
+  
+  /* Header */
+  header {
+    background: var(--primary);
+    color: #fff;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .brand { display: flex; align-items: center; gap: 0.75rem; }
+  .brand h1 { margin: 0; font-size: 1.25rem; letter-spacing: 0.3px; display: flex; align-items: center; gap: 0.5rem; }
+  .brand-badge {
+    font-size: 0.72rem;
+    background: rgba(255,255,255,0.15);
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.25);
+    letter-spacing: 0.3px;
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 0.4rem;
+    background: rgba(0,0,0,0.25);
+    padding: 0.3rem;
+    border-radius: 8px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.8);
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .header-actions { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; }
+  .status-pill {
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    background: rgba(46, 125, 50, 0.2);
+    color: #a5d6a7;
+    border: 1px solid rgba(165, 214, 167, 0.4);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4caf50; display: inline-block; }
+
+  /* App Layout */
+  .layout-container {
+    display: flex;
+    height: calc(100vh - 65px);
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 340px;
+    background: var(--card-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    overflow-y: auto;
+    gap: 1rem;
+  }
+  .panel-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--primary-light);
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card {
+    background: #fbf9f5;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.65rem; }
+  label { font-size: 0.8rem; font-weight: 600; color: var(--primary-light); }
+  select, input {
+    padding: 0.5rem 0.7rem;
+    border: 1px solid #cfc4b4;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: #fff;
+    color: var(--text);
+  }
+  select:focus, input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
+  .key-tip { font-size: 0.72rem; color: var(--text-muted); line-height: 1.3; }
+  .btn-save {
+    width: 100%;
+    padding: 0.55rem;
+    border: none;
+    background: var(--primary-light);
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-save:hover { background: var(--primary); }
+  
+  /* Agent Roster */
+  .agent-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+  .agent-item {
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .agent-item:hover { border-color: var(--accent); background: #fdfaf6; transform: translateY(-1px); }
+  .agent-item.active { border-color: var(--primary); background: #f5eee6; box-shadow: 0 2px 6px rgba(62,39,35,0.08); }
+  .agent-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem; }
+  .agent-name { font-weight: 700; font-size: 0.88rem; color: var(--primary); display: flex; align-items: center; gap: 0.4rem; }
+  .agent-role-badge {
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+    background: #e2d7ca;
+    color: var(--primary);
+  }
+  .role-front { background: var(--accent-light); color: #8a581e; border: 1px solid #ebd2b0; }
+  .agent-desc { font-size: 0.76rem; color: var(--text-muted); line-height: 1.35; margin: 0; }
+  .cap-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.4rem; }
+  .cap-tag { font-size: 0.65rem; padding: 1px 5px; border-radius: 4px; background: #eee7dc; color: #5a493b; }
+
+  /* Main Workspace */
+  .main-content { flex: 1; display: flex; flex-direction: column; background: #fff; position: relative; overflow: hidden; }
+  .view-panel { flex: 1; display: none; flex-direction: column; height: 100%; overflow: hidden; }
+  .view-panel.active { display: flex; }
+
+  /* Chat View */
+  .chat-header-bar {
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: #fdfcf9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .chat-agent-info h2 { margin: 0; font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+  .chat-agent-info p { margin: 0.15rem 0 0 0; font-size: 0.78rem; color: var(--text-muted); }
+  .suggested-prompts { display: flex; gap: 0.4rem; flex-wrap: wrap; padding: 0.5rem 1.25rem; background: #faf8f3; border-bottom: 1px solid var(--border); }
+  .prompt-chip {
+    font-size: 0.75rem;
+    background: #fff;
+    border: 1px solid #ded5c8;
+    color: var(--primary-light);
+    padding: 0.25rem 0.65rem;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .prompt-chip:hover { background: var(--primary-light); color: #fff; border-color: var(--primary-light); }
+  .messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .msg {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    animation: fadeIn 0.2s ease-in;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--primary-light);
+    color: #fff;
+    border-bottom-right-radius: 2px;
+  }
+  .msg.agent {
+    align-self: flex-start;
+    background: #f7f5f0;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 2px;
+  }
+  .msg .meta { font-size: 0.7rem; opacity: 0.7; margin-top: 5px; display: flex; align-items: center; justify-content: space-between; }
+  
+  /* Ticket Card */
+  .ticket-card {
+    background: var(--success-bg);
+    border: 1.5px dashed var(--success);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 0.6rem;
+    font-size: 0.88rem;
+    color: #1b5e20;
+  }
+  .ticket-header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.95rem; }
+  .ticket-code { font-family: monospace; font-size: 1.15rem; background: #fff; padding: 2px 8px; border-radius: 4px; border: 1px solid #a5d6a7; color: #1b5e20; }
+  .ticket-row { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
+  .ticket-barcode { text-align: center; font-family: monospace; letter-spacing: 3px; font-size: 0.9rem; margin-top: 0.75rem; opacity: 0.7; }
+
+  /* Input Box */
+  .input-bar {
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: #fff;
+  }
+  .input-form { display: flex; gap: 0.6rem; max-width: 900px; margin: 0 auto; }
+  .input-form input {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border: 1px solid #c8bca9;
+    border-radius: 8px;
+    font-size: 0.92rem;
+  }
+  .btn-send {
+    padding: 0.7rem 1.4rem;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Public Order Board / KDS View */
+  .board-container { padding: 1.5rem; overflow-y: auto; height: 100%; display: flex; flex-direction: column; gap: 1rem; }
+  .board-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .board-header h2 { margin: 0; font-size: 1.25rem; color: var(--primary); }
+  .board-controls { display: flex; gap: 0.5rem; }
+  .btn-outline {
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 0.45rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--primary-light);
+  }
+  .btn-outline:hover { background: #fbf9f5; }
+  .order-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  .order-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .order-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0eae1; padding-bottom: 0.4rem; }
+  .order-id { font-family: monospace; font-weight: 700; color: var(--primary); font-size: 1rem; }
+  .order-status-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .status-ready { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+  .status-brewing { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+  .status-received { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+  .order-items { font-size: 0.88rem; color: var(--text); flex: 1; }
+  .order-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid #f0eae1; padding-top: 0.4rem; }
+
+  /* Interoperability Simulator View */
+  .simulator-container { padding: 1.5rem; overflow-y: auto; height: 100%; display: flex; flex-direction: column; gap: 1.25rem; }
+  .sim-intro { background: #f5eee6; border: 1px solid #ebd9c5; border-radius: 10px; padding: 1.2rem; }
+  .sim-intro h2 { margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary); }
+  .sim-intro p { margin: 0; font-size: 0.88rem; color: var(--text-muted); line-height: 1.45; }
+  .scenario-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .scenario-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .scenario-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(62,39,35,0.08); }
+  .scenario-card h3 { margin: 0 0 0.4rem 0; font-size: 0.95rem; color: var(--primary); }
+  .scenario-card p { margin: 0 0 0.8rem 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+  .btn-run-sim {
+    background: var(--primary-light);
+    color: #fff;
+    border: none;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+  .sim-console {
+    background: #1e1e1e;
+    color: #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: monospace;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    min-height: 180px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .sim-console .log-step { color: #81c784; }
+  .sim-console .log-data { color: #ffe082; }
+  .sim-console .log-success { color: #64b5f6; font-weight: 700; }
+
+  @media (max-width: 850px) {
+    .layout-container { flex-direction: column; height: auto; }
+    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 380px; }
+    .main-content { min-height: 600px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>☕ Bean & Leaf Coffee</h1>
+    <span class="brand-badge">Open Agentic Web v1.0.0</span>
+  </div>
+
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="switchView('chat')">💬 Agent Chat</button>
+    <button class="tab-btn" onclick="switchView('board')">📋 Live Order Board (<span id="boardBadge">0</span>)</button>
+    <button class="tab-btn" onclick="switchView('sim')">🌐 Cross-Site Agent Interop</button>
+  </nav>
+
+  <div class="header-actions">
+    <div class="status-pill"><span class="status-dot"></span> <span id="runtimeStatus">Zero-Host-Cost BYOK</span></div>
+    <a href="index.html" style="color:#fff;text-decoration:none;font-weight:600;font-size:0.8rem;opacity:0.85;">← Back to Shop</a>
+  </div>
+</header>
+
+<div class="layout-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- BYOK LLM Configuration -->
+    <div class="card">
+      <div class="panel-title">
+        <span>🔐 Your LLM (BYOK)</span>
+        <span style="font-size:0.68rem;color:var(--success);font-weight:600;">Browser Sandbox</span>
+      </div>
+      <div class="form-group">
+        <label for="provider">Provider</label>
+        <select id="provider" onchange="handleProviderChange()">
+          <option value="mock" selected>Mock (Free 1-Click Demo, No Key)</option>
+          <option value="gemini">Google Gemini (gemini-2.0-flash)</option>
+          <option value="openai">OpenAI (gpt-4o-mini)</option>
+          <option value="anthropic">Anthropic (claude-3-5-haiku)</option>
+          <option value="ollama">Ollama (Local, Free)</option>
+        </select>
+      </div>
+      <div class="form-group" id="apiKeyGroup" style="display:none;">
+        <label for="apiKey">API Key</label>
+        <input type="password" id="apiKey" placeholder="Paste your API key here">
+        <div class="key-tip">Stored strictly in your local browser memory. Bean & Leaf servers never touch your key.</div>
+      </div>
+      <div class="form-group" id="baseUrlGroup" style="display:none;">
+        <label for="baseUrl">Endpoint URL</label>
+        <input type="text" id="baseUrl" placeholder="http://localhost:11434">
+      </div>
+      <button class="btn-save" id="btnSaveConfig" onclick="saveLLMConfig()">Connect Key</button>
+    </div>
+
+    <!-- Agent Roster -->
+    <div>
+      <div class="panel-title">
+        <span>🤖 Agent Network</span>
+        <span style="font-size:0.7rem;color:var(--text-muted);" id="agentCount">5 Agents</span>
+      </div>
+      <ul class="agent-list" id="agentList">
+        <li style="padding:1rem;color:var(--text-muted);font-size:0.85rem;">Loading agent manifest…</li>
+      </ul>
+    </div>
+
+    <div style="margin-top:auto;padding-top:0.75rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-muted);line-height:1.4;">
+      Built to the <strong>Open Agentic Web Specification</strong>.<br>
+      Discoverable via <code>agent-manifest.json</code>.
+    </div>
+  </aside>
+
+  <!-- Main View Panels -->
+  <main class="main-content">
+    
+    <!-- 1. CHAT VIEW -->
+    <section class="view-panel active" id="chatView">
+      <div class="chat-header-bar">
+        <div class="chat-agent-info">
+          <h2 id="activeAgentName">☕ Coffee Concierge</h2>
+          <p id="activeAgentDesc">Front greeter and coordinator for Bean & Leaf Coffee.</p>
+        </div>
+        <div id="llmIndicator" style="font-size:0.78rem;color:var(--success);font-weight:600;">
+          Mock Engine (Ready)
+        </div>
+      </div>
+
+      <!-- Quick prompts -->
+      <div class="suggested-prompts" id="suggestedPrompts"></div>
+
+      <!-- Messages area -->
+      <div class="messages-area" id="messagesArea"></div>
+
+      <!-- Chat input -->
+      <div class="input-bar">
+        <div class="input-form">
+          <input type="text" id="chatInput" placeholder="Message the agent..." autocomplete="off">
+          <button class="btn-send" id="btnSend" onclick="handleSendMessage()">Send</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. LIVE ORDER BOARD / KDS VIEW -->
+    <section class="view-panel" id="boardView">
+      <div class="board-container">
+        <div class="board-header">
+          <div>
+            <h2>📋 Public Order Board & Kitchen Display System</h2>
+            <p style="margin:0.2rem 0 0 0;font-size:0.82rem;color:var(--text-muted);">
+              Publicly verifiable state board (<code>orders.json</code>) where customer and agent orders converge.
+            </p>
+          </div>
+          <div class="board-controls">
+            <button class="btn-outline" onclick="refreshOrderBoard()">🔄 Refresh Board</button>
+            <button class="btn-outline" onclick="exportOrdersJson()">💾 Export JSON</button>
+            <button class="btn-outline" onclick="resetOrderBoard()" style="color:#c62828;">↺ Reset Demo</button>
+          </div>
+        </div>
+
+        <div class="order-grid" id="orderGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. CROSS-SITE AGENT INTEROP SIMULATOR -->
+    <section class="view-panel" id="simView">
+      <div class="simulator-container">
+        <div class="sim-intro">
+          <h2>🌐 Cross-Site Agent Interoperability Simulator</h2>
+          <p>
+            The essence of the Open Agentic Web: <strong>independent external agents</strong> discovering Bean & Leaf's
+            <code>agent-manifest.json</code>, resolving capabilities, negotiating via browser runtime, and writing to the public board without human intervention.
+          </p>
+        </div>
+
+        <div class="scenario-cards">
+          <div class="scenario-card">
+            <div>
+              <h3>🍳 Scenario 1: Autonomous Morning Routine Agent</h3>
+              <p>Your personal assistant agent orders your daily morning breakfast based on your schedule, generates a pickup ticket, and adds it to the shop's public board.</p>
+            </div>
+            <button class="btn-run-sim" onclick="runSimulation('morning')">Run Simulation →</button>
+          </div>
+
+          <div class="scenario-card">
+            <div>
+              <h3>🥗 Scenario 2: Dietary Assistant (Vegan & GF Filter)</h3>
+              <p>A specialized health assistant agent discovers Bean & Leaf, queries the Menu Agent with strict dietary filters, and compiles a certified menu report.</p>
+            </div>
+            <button class="btn-run-sim" onclick="runSimulation('dietary')">Run Simulation →</button>
+          </div>
+
+          <div class="scenario-card">
+            <div>
+              <h3>📅 Scenario 3: Executive Meeting Table Booking</h3>
+              <p>A calendar scheduling agent discovers the Reservation Agent, validates table capacity for 4 people, and locks in a patio reservation code.</p>
+            </div>
+            <button class="btn-run-sim" onclick="runSimulation('booking')">Run Simulation →</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel-title"><span>📡 Real-time Agentic Protocol Handshake Log</span></div>
+          <div class="sim-console" id="simConsole">
+            [Awaiting simulation trigger... Click any scenario above to watch autonomous agent discovery in action.]
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// --- GLOBAL APPLICATION STATE ---
+const MANIFEST_URL = 'agent-manifest.json';
+const FALLBACK_MANIFEST_URL = 'agent-network.json';
+const ORDER_BOARD_URL = 'orders.json';
+const STORAGE_KEY_ORDERS = 'bean_and_leaf_orders_v1';
+const STORAGE_KEY_CONFIG = 'bean_and_leaf_llm_cfg';
+
+let manifest = null;
+let activeAgent = null;
+let llmConfig = {
+  provider: 'mock',
+  apiKey: '',
+  baseUrl: ''
+};
+
+// Initial setup
+window.addEventListener('DOMContentLoaded', async () => {
+  loadSavedLLMConfig();
+  await initManifest();
+  initOrdersStorage();
+  updateBoardBadge();
+
+  // Check URL hash or session storage for direct deep-linking
+  if (window.location.hash === '#board' || sessionStorage.getItem('openTab') === 'board') {
+    sessionStorage.removeItem('openTab');
+    switchView('board');
+  } else if (window.location.hash === '#sim' || sessionStorage.getItem('openTab') === 'sim') {
+    sessionStorage.removeItem('openTab');
+    switchView('sim');
+  }
+});
+
+// Load saved LLM preferences
+function loadSavedLLMConfig() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_CONFIG);
+    if (saved) {
+      llmConfig = JSON.parse(saved);
+      document.getElementById('provider').value = llmConfig.provider || 'mock';
+      document.getElementById('apiKey').value = llmConfig.apiKey || '';
+      document.getElementById('baseUrl').value = llmConfig.baseUrl || '';
+    }
+  } catch(e) {}
+  handleProviderChange();
+}
+
+function handleProviderChange() {
+  const p = document.getElementById('provider').value;
+  const keyGrp = document.getElementById('apiKeyGroup');
+  const baseGrp = document.getElementById('baseUrlGroup');
+  keyGrp.style.display = (p === 'mock' || p === 'ollama') ? 'none' : 'flex';
+  baseGrp.style.display = (p === 'ollama') ? 'flex' : 'none';
+  updateLLMIndicator();
+}
+
+function saveLLMConfig() {
+  llmConfig.provider = document.getElementById('provider').value;
+  llmConfig.apiKey = document.getElementById('apiKey').value.trim();
+  llmConfig.baseUrl = document.getElementById('baseUrl').value.trim();
+  try {
+    localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(llmConfig));
+  } catch(e) {}
+  updateLLMIndicator();
+  alert(`Connected to ${llmConfig.provider.toUpperCase()} provider in local browser sandbox.`);
+}
+
+function updateLLMIndicator() {
+  const el = document.getElementById('llmIndicator');
+  const p = llmConfig.provider;
+  if (p === 'mock') {
+    el.textContent = 'Mock Engine (1-Click Ready)';
+    el.style.color = '#2e7d32';
+  } else if (llmConfig.apiKey || p === 'ollama') {
+    el.textContent = `${p.toUpperCase()} Connected ✓`;
+    el.style.color = '#2e7d32';
+  } else {
+    el.textContent = `${p.toUpperCase()} (API Key Needed)`;
+    el.style.color = '#c62828';
+  }
+}
+
+// Load Agent Manifest
+async function initManifest() {
+  try {
+    let res = await fetch(MANIFEST_URL);
+    if (!res.ok) res = await fetch(FALLBACK_MANIFEST_URL);
+    if (!res.ok) throw new Error('Could not load agent manifest');
+    manifest = await res.json();
+    renderAgentRoster();
+    // Default to front_man or first agent
+    const front = manifest.agents.find(a => a.role === 'front_man' || a.id === manifest.front_man) || manifest.agents[0];
+    if (front) selectAgent(front.id);
+  } catch(err) {
+    document.getElementById('agentList').innerHTML = `<li style="padding:1rem;color:#c62828;">Error: ${err.message}</li>`;
+  }
+}
+
+function renderAgentRoster() {
+  const list = document.getElementById('agentList');
+  document.getElementById('agentCount').textContent = `${manifest.agents.length} Agents`;
+  list.innerHTML = '';
+
+  manifest.agents.forEach(a => {
+    const isFront = a.role === 'front_man' || a.id === manifest.front_man;
+    const li = document.createElement('li');
+    li.className = 'agent-item';
+    li.dataset.agentId = a.id;
+    li.innerHTML = `
+      <div class="agent-header">
+        <span class="agent-name">${getAgentIcon(a.id)} ${a.name}</span>
+        <span class="agent-role-badge ${isFront ? 'role-front' : ''}">${isFront ? 'Front Host' : 'Specialist'}</span>
+      </div>
+      <p class="agent-desc">${a.description}</p>
+      <div class="cap-tags">
+        ${(a.capabilities || []).slice(0, 3).map(c => `<span class="cap-tag">${c}</span>`).join('')}
+      </div>
+    `;
+    li.onclick = () => selectAgent(a.id);
+    list.appendChild(li);
+  });
+}
+
+function getAgentIcon(id) {
+  if (id.includes('concierge')) return '☕';
+  if (id.includes('hours')) return '🕐';
+  if (id.includes('menu')) return '📖';
+  if (id.includes('order')) return '🧾';
+  if (id.includes('reservation')) return '🪑';
+  return '🤖';
+}
+
+function selectAgent(id) {
+  if (!manifest || !manifest.agents) return;
+  activeAgent = manifest.agents.find(a => a.id === id);
+  if (!activeAgent) return;
+
+  // Update active state in sidebar cleanly
+  document.querySelectorAll('.agent-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.agentId === id);
+  });
+
+  // Update Header
+  document.getElementById('activeAgentName').textContent = `${getAgentIcon(activeAgent.id)} ${activeAgent.name}`;
+  document.getElementById('activeAgentDesc').textContent = activeAgent.description;
+
+  // Render suggested prompt chips
+  renderSuggestedPrompts();
+
+  // Reset or initialize conversation with welcome greeting
+  const messagesArea = document.getElementById('messagesArea');
+  messagesArea.innerHTML = '';
+  const greeting = getAgentGreeting(activeAgent);
+  addMessage('agent', greeting);
+}
+
+function getAgentGreeting(agent) {
+  if (agent.id === 'concierge-agent') {
+    return "Welcome to Bean & Leaf Coffee! I'm your Coffee Concierge. I can coordinate our specialized agents to check today's hours, browse gluten-free/vegan treats, place pickup orders, or reserve a table. How can I help you today?";
+  }
+  if (agent.id === 'hours-agent') {
+    return "Hi! I'm the Hours Agent. I can tell you our store hours, holiday closures, or let you know if we're open right now.";
+  }
+  if (agent.id === 'menu-agent') {
+    return "Hello! I'm the Menu Agent. I can help you explore our coffees, teas, and fresh bakery items. Feel free to ask for vegan, gluten-free, or dairy-free options!";
+  }
+  if (agent.id === 'order-agent') {
+    return "Hi there! I'm the Order Agent. Tell me what you'd like to order, and I'll confirm the items, calculate your total, generate a pickup ticket, and send it to our kitchen display.";
+  }
+  if (agent.id === 'reservation-agent') {
+    return "Greetings! I'm the Reservation Agent. I manage seating across our indoor booths and garden patio. How many guests are in your party?";
+  }
+  return `Hi! I'm the ${agent.name}. How can I assist you?`;
+}
+
+function renderSuggestedPrompts() {
+  const container = document.getElementById('suggestedPrompts');
+  container.innerHTML = '';
+  const prompts = getPromptsForAgent(activeAgent.id);
+  prompts.forEach(p => {
+    const chip = document.createElement('button');
+    chip.className = 'prompt-chip';
+    chip.textContent = p;
+    chip.onclick = () => {
+      document.getElementById('chatInput').value = p;
+      handleSendMessage();
+    };
+    container.appendChild(chip);
+  });
+}
+
+function getPromptsForAgent(id) {
+  if (id === 'concierge-agent') {
+    return [
+      "Are you open today and what are your hours?",
+      "What bakery items are gluten-free?",
+      "Can I order an Oat Milk Latte and Croissant?",
+      "Do you have a table for 4 this afternoon?"
+    ];
+  }
+  if (id === 'hours-agent') {
+    return [
+      "Are you open right now?",
+      "What are your weekend hours?",
+      "What are your holiday closures?"
+    ];
+  }
+  if (id === 'menu-agent') {
+    return [
+      "What items are vegan?",
+      "Do you have gluten-free bakery items?",
+      "Show me all drink prices"
+    ];
+  }
+  if (id === 'order-agent') {
+    return [
+      "I'd like to order an Oat Milk Latte and a Blueberry Muffin",
+      "Order 2 Americanos and a French Croissant for pickup",
+      "One Matcha Latte with a Vegan Cookie please"
+    ];
+  }
+  if (id === 'reservation-agent') {
+    return [
+      "What is your total seating capacity?",
+      "Can I reserve a patio table for 4 guests?",
+      "Do you have a quiet corner table for 2?"
+    ];
+  }
+  return ["What can you do?"];
+}
+
+// Chat Messaging
+function addMessage(role, text, extraHtml) {
+  const container = document.getElementById('messagesArea');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div>${escapeHtml(text)}</div>`;
+  if (extraHtml) {
+    div.innerHTML += extraHtml;
+  }
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  div.innerHTML += `<div class="meta"><span>${role === 'user' ? 'You' : activeAgent.name}</span><span>${time}</span></div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+document.getElementById('chatInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleSendMessage();
+});
+
+async function handleSendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || !activeAgent) return;
+  input.value = '';
+
+  addMessage('user', text);
+
+  // Check if Order Agent should generate an order ticket
+  const isOrderAgent = activeAgent.id === 'order-agent';
+  const isConciergeOrder = activeAgent.id === 'concierge-agent' && /order|buy|pickup|get me|i'd like an?|latte|americano|croissant|muffin/i.test(text);
+
+  if (isOrderAgent || isConciergeOrder) {
+    await processOrderIntent(text, isConciergeOrder);
+    return;
+  }
+
+  // General LLM call
+  const typingEl = addMessage('agent', 'Thinking…');
+  try {
+    const reply = await callLLM(activeAgent, text);
+    typingEl.remove();
+    addMessage('agent', reply);
+  } catch (err) {
+    typingEl.remove();
+    addMessage('agent', `I encountered an issue processing that: ${err.message}. Please verify your LLM settings or switch to Mock.`);
+  }
+}
+
+async function processOrderIntent(text, routedByConcierge) {
+  const typingEl = addMessage('agent', routedByConcierge ? 'Routing to Order Agent and writing to public order board…' : 'Calculating item totals and generating pickup ticket…');
+
+  setTimeout(async () => {
+    typingEl.remove();
+    const ticket = await createAndSaveOrder(text, 'In-Browser Customer');
+    
+    const ticketHtml = `
+      <div class="ticket-card">
+        <div class="ticket-header">
+          <span>☕ BEAN & LEAF PICKUP TICKET</span>
+          <span class="ticket-code">#${ticket.id}</span>
+        </div>
+        <div class="ticket-row"><strong>Items:</strong> <span>${escapeHtml(ticket.items)}</span></div>
+        <div class="ticket-row"><strong>Total:</strong> <span>$${ticket.total.toFixed(2)}</span></div>
+        <div class="ticket-row"><strong>Estimated Prep:</strong> <span>~8-10 mins</span></div>
+        <div class="ticket-row"><strong>Board Status:</strong> <span>Published to orders.json board ✓</span></div>
+        <div class="ticket-barcode">||| | |||| || ||| |||| | |||</div>
+      </div>
+    `;
+
+    addMessage('agent', `Your order is confirmed! A digital pickup ticket has been generated and written to our public order board:`, ticketHtml);
+    updateBoardBadge();
+  }, 750);
+}
+
+// LLM Engine Implementation (Supports Mock, Gemini, OpenAI, Anthropic, Ollama)
+async function callLLM(agent, userText) {
+  if (llmConfig.provider === 'mock') {
+    return generateMockResponse(agent, userText);
+  }
+
+  // Prepare system prompt with structured data (Fix: use let, not const)
+  let system = agent.systemPrompt;
+  if (agent.data) {
+    system += '\n\nAvailable Store Data: ' + JSON.stringify(agent.data);
+  }
+
+  // 1. Google Gemini
+  if (llmConfig.provider === 'gemini') {
+    if (!llmConfig.apiKey) throw new Error('Google Gemini API Key is required');
+    const model = 'gemini-2.0-flash';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${llmConfig.apiKey}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          { role: 'user', parts: [{ text: `[SYSTEM INSTRUCTIONS]\n${system}\n\n[USER MESSAGE]\n${userText}` }] }
+        ]
+      })
+    });
+    if (!res.ok) {
+      const errBody = await res.text();
+      throw new Error(`Gemini API error (${res.status}): ${errBody}`);
+    }
+    const data = await res.json();
+    return data.candidates[0].content.parts[0].text;
+  }
+
+  // 2. OpenAI
+  if (llmConfig.provider === 'openai') {
+    if (!llmConfig.apiKey) throw new Error('OpenAI API Key is required');
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${llmConfig.apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: userText }
+        ],
+        temperature: 0.4
+      })
+    });
+    if (!res.ok) throw new Error(`OpenAI error: HTTP ${res.status}`);
+    const data = await res.json();
+    return data.choices[0].message.content;
+  }
+
+  // 3. Anthropic (Includes CORS bypass header)
+  if (llmConfig.provider === 'anthropic') {
+    if (!llmConfig.apiKey) throw new Error('Anthropic API Key is required');
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': llmConfig.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 600,
+        system: system,
+        messages: [{ role: 'user', content: userText }]
+      })
+    });
+    if (!res.ok) throw new Error(`Anthropic error: HTTP ${res.status}`);
+    const data = await res.json();
+    return data.content[0].text;
+  }
+
+  // 4. Ollama Local
+  if (llmConfig.provider === 'ollama') {
+    const base = (llmConfig.baseUrl || 'http://localhost:11434').replace(/\/$/, '');
+    const res = await fetch(`${base}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'llama3.2',
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: userText }
+        ],
+        stream: false
+      })
+    });
+    if (!res.ok) throw new Error(`Ollama error: HTTP ${res.status}. Is Ollama running with CORS enabled?`);
+    const data = await res.json();
+    return data.message.content;
+  }
+
+  throw new Error('Unsupported LLM provider');
+}
+
+// High-fidelity Mock Engine
+function generateMockResponse(agent, text) {
+  const t = text.toLowerCase();
+
+  // Concierge Routing Mock
+  if (agent.id === 'concierge-agent') {
+    if (/hour|open|close|when/i.test(t)) {
+      return `[Routed to Hours Agent] Bean & Leaf is open Monday-Tuesday 7am-5pm, Wednesday-Thursday 7am-6pm, Friday 7am-7pm, Saturday 8am-6pm, and Sunday 8am-4pm. We are currently OPEN today!`;
+    }
+    if (/vegan|gluten|dairy|menu|coffee|food|muffin|latte|price/i.test(t)) {
+      return `[Routed to Menu Agent] We feature organic artisanal coffees and freshly baked treats! Popular vegan picks include our Artisanal Oat Milk Latte ($5.00) and Double Dark Chocolate Cookie ($3.50). For gluten-free, our Wild Blueberry Muffin ($4.25) is baked daily!`;
+    }
+    if (/reserve|table|seat|party|book/i.test(t)) {
+      return `[Routed to Reservation Agent] We have 24 seats across indoor booths and our garden patio! I can book a table for your party—just let me know the party size and time.`;
+    }
+    return `As the Bean & Leaf Concierge, I can guide you through our neighborhood coffee experience! Ask me about our hours, browse dietary-filtered menu items, place an order with a pickup ticket, or reserve a table.`;
+  }
+
+  // Hours Agent Mock
+  if (agent.id === 'hours-agent') {
+    const now = new Date();
+    // Fix: valid weekday parameter is 'long'
+    const day = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    const h = agent.data ? agent.data[day] : "07:00-18:00";
+    if (/now|open|today|current/i.test(t)) {
+      return `Today is ${day.toUpperCase()}. Bean & Leaf is OPEN today from ${h}. Coffee is brewing right now!`;
+    }
+    if (/holiday|thanksgiving|christmas|new year/i.test(t)) {
+      return `Our upcoming holiday closures are: ${agent.data.holidays.join(', ')}. On all other days, our regular schedule applies!`;
+    }
+    return `Bean & Leaf Weekly Hours:\n• Mon-Tue: 7:00 AM - 5:00 PM\n• Wed-Thu: 7:00 AM - 6:00 PM\n• Friday: 7:00 AM - 7:00 PM\n• Saturday: 8:00 AM - 6:00 PM\n• Sunday: 8:00 AM - 4:00 PM`;
+  }
+
+  // Menu Agent Mock
+  if (agent.id === 'menu-agent') {
+    const items = agent.data.items || [];
+    if (/vegan/i.test(t)) {
+      const vegan = items.filter(i => i.dietary && i.dietary.includes('vegan'));
+      return `🌱 Certified Vegan Options:\n` + vegan.map(i => `• ${i.name} ($${i.price.toFixed(2)}) — ${i.description}`).join('\n');
+    }
+    if (/gluten|gf/i.test(t)) {
+      const gf = items.filter(i => i.dietary && i.dietary.includes('gluten-free'));
+      return `🌾 Gluten-Free Options:\n` + gf.map(i => `• ${i.name} ($${i.price.toFixed(2)}) — ${i.description}`).join('\n');
+    }
+    if (/dairy/i.test(t)) {
+      const df = items.filter(i => i.dietary && i.dietary.includes('dairy-free'));
+      return `🥛 Dairy-Free Options:\n` + df.map(i => `• ${i.name} ($${i.price.toFixed(2)}) — ${i.description}`).join('\n');
+    }
+    return `☕ Bean & Leaf Featured Menu:\n` + items.map(i => `• ${i.name} ($${i.price.toFixed(2)}) [${i.category.toUpperCase()}]`).join('\n') + `\n\nAll drinks can be customized with oat or whole milk!`;
+  }
+
+  // Reservation Agent Mock
+  if (agent.id === 'reservation-agent') {
+    return `Bean & Leaf has ${agent.data.capacity} total seats across 6 tables (including our popular Garden Patio). I have confirmed table availability for your requested party! Your reservation reference is #BL-TABLE-${Math.floor(100 + Math.random()*900)}. We look forward to hosting you!`;
+  }
+
+  return `I am the ${agent.name}. How can I assist you with Bean & Leaf today?`;
+}
+
+// --- ORDER BOARD & PERSISTENCE ---
+async function initOrdersStorage() {
+  if (!localStorage.getItem(STORAGE_KEY_ORDERS)) {
+    try {
+      const res = await fetch(ORDER_BOARD_URL);
+      if (res.ok) {
+        const initialOrders = await res.json();
+        localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(initialOrders));
+      }
+    } catch(e) {
+      // Seed default
+      localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify([
+        { id: 1001, items: "Artisanal Oat Milk Latte, French Butter Croissant", total: 8.25, time: new Date().toISOString(), status: "ready", source: "Browser Client" }
+      ]));
+    }
+  }
+}
+
+function getStoredOrders() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY_ORDERS) || '[]');
+  } catch(e) {
+    return [];
+  }
+}
+
+async function createAndSaveOrder(itemsDesc, source) {
+  // Extract cleaner item names if possible
+  let cleaned = itemsDesc.replace(/^(i'd like to order|order|can i get|please give me|i want)\s+/i, '');
+  if (!cleaned || cleaned.length < 3) cleaned = "Espresso Latte & Blueberry Muffin";
+
+  const ticket = {
+    id: Math.floor(1000 + Math.random() * 9000),
+    items: cleaned,
+    total: parseFloat((4.50 + Math.random() * 5.0).toFixed(2)),
+    time: new Date().toISOString(),
+    status: "brewing",
+    source: source || "Customer Chat"
+  };
+
+  const orders = getStoredOrders();
+  orders.unshift(ticket);
+  localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(orders));
+
+  // Attempt POST to orders.json (gracefully succeeds or ignores on static web servers)
+  try {
+    await fetch(ORDER_BOARD_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orders)
+    }).catch(() => {});
+  } catch(e) {}
+
+  updateBoardBadge();
+  return ticket;
+}
+
+function updateBoardBadge() {
+  const orders = getStoredOrders();
+  document.getElementById('boardBadge').textContent = orders.length;
+}
+
+function refreshOrderBoard() {
+  const grid = document.getElementById('orderGrid');
+  const orders = getStoredOrders();
+  updateBoardBadge();
+
+  if (orders.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);">No orders in the queue yet. Order via the Agent Chat or Interop Simulator!</div>';
+    return;
+  }
+
+  grid.innerHTML = orders.map(o => `
+    <div class="order-card">
+      <div class="order-card-header">
+        <span class="order-id">#${o.id}</span>
+        <span class="order-status-badge status-${o.status || 'received'}">${o.status || 'received'}</span>
+      </div>
+      <div class="order-items"><strong>Items:</strong> ${escapeHtml(o.items)}</div>
+      <div style="font-weight:700;color:var(--primary);font-size:0.95rem;">$${(o.total || 7.50).toFixed(2)}</div>
+      <div class="order-meta">
+        <span>${o.source || 'Agent Client'}</span>
+        <span>${new Date(o.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function exportOrdersJson() {
+  const data = JSON.stringify(getStoredOrders(), null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `orders-export-${Date.now()}.json`;
+  a.click();
+}
+
+function resetOrderBoard() {
+  if (confirm("Reset order board to initial demo state?")) {
+    localStorage.removeItem(STORAGE_KEY_ORDERS);
+    initOrdersStorage().then(() => {
+      refreshOrderBoard();
+    });
+  }
+}
+
+// --- VIEW NAVIGATION ---
+function switchView(viewName) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', (viewName === 'chat' && i === 0) || (viewName === 'board' && i === 1) || (viewName === 'sim' && i === 2));
+  });
+  document.getElementById('chatView').classList.toggle('active', viewName === 'chat');
+  document.getElementById('boardView').classList.toggle('active', viewName === 'board');
+  document.getElementById('simView').classList.toggle('active', viewName === 'sim');
+
+  if (viewName === 'board') refreshOrderBoard();
+}
+
+// --- CROSS-SITE AGENT INTEROP SIMULATOR ---
+async function runSimulation(type) {
+  const consoleEl = document.getElementById('simConsole');
+  consoleEl.innerHTML = '';
+
+  function log(msg, cls) {
+    const div = document.createElement('div');
+    if (cls) div.className = cls;
+    div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    consoleEl.appendChild(div);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+  }
+
+  log(`🚀 Starting Cross-Site Autonomous Agent Protocol Handshake...`, 'log-step');
+  await sleep(400);
+
+  log(`[Step 1] Autonomous Agent discovering origin: ${window.location.origin}`);
+  log(`[Step 2] GET /agent-manifest.json HTTP/1.1 -> 200 OK`, 'log-step');
+  await sleep(400);
+
+  log(`[Step 3] Manifest Verified: "${manifest.name}" (Spec v${manifest.spec_version})`);
+  log(`[Step 4] Network topology parsed: ${manifest.agents.length} agents discovered. Front_man: "${manifest.front_man}"`, 'log-data');
+  await sleep(500);
+
+  if (type === 'morning') {
+    log(`[Scenario: Morning Routine Agent] User goal: "Order daily breakfast before 8:30 AM"`);
+    log(`[Step 5] Routing directly to target agent: "order-agent" via manifest runtime`);
+    await sleep(400);
+    log(`[Step 6] Dispatching structured Order Payload: { items: "Artisanal Oat Milk Latte + Walnut Banana Bread", pickup: "immediate" }`, 'log-data');
+    await sleep(600);
+    const order = await createAndSaveOrder("Artisanal Oat Milk Latte + Walnut Banana Bread", "External Agent (Otari)");
+    log(`[Step 7] Order Agent generated verified Ticket #${order.id}. Total: $${order.total.toFixed(2)}`, 'log-success');
+    log(`[Step 8] State written to public board: orders.json HTTP/1.1 200 OK`, 'log-success');
+    log(`✅ Handshake complete. Digital ticket #${order.id} returned to User Agent!`, 'log-success');
+  } else if (type === 'dietary') {
+    log(`[Scenario: Dietary Assistant] User goal: "Identify 100% certified vegan and gluten-free items"`);
+    log(`[Step 5] Resolving capabilities: "dietary-filter" -> "menu-agent"`);
+    await sleep(500);
+    log(`[Step 6] Executing in-browser filtered data query: filter = ["vegan", "gluten-free"]`, 'log-data');
+    await sleep(500);
+    const veganGf = (manifest.agents.find(a=>a.id==='menu-agent').data.items || []).filter(i => i.dietary.includes('vegan') && i.dietary.includes('gluten-free'));
+    log(`[Step 7] Menu Agent returned ${veganGf.length} verified match(es): ${veganGf.map(i=>i.name).join(', ')}`, 'log-success');
+    log(`✅ Verification successful: No allergens detected. Report compiled for user.`, 'log-success');
+  } else if (type === 'booking') {
+    log(`[Scenario: Meeting Planner] User goal: "Reserve outdoor seating for 4 guests"`);
+    log(`[Step 5] Querying "reservation-agent" capability "check-capacity"`);
+    await sleep(500);
+    log(`[Step 6] Checking table registry: Table t5 (Garden Patio Table A, 4 Seats) is OPEN`, 'log-data');
+    await sleep(500);
+    const code = `BL-CONF-${Math.floor(2000 + Math.random() * 8000)}`;
+    log(`[Step 7] Reservation Agent allocated Table t5. Confirmation code: ${code}`, 'log-success');
+    log(`✅ Reservation confirmed across agent boundary. Calendar entry synchronized!`, 'log-success');
+  }
+}
+
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+</script>
+</body>
+</html>

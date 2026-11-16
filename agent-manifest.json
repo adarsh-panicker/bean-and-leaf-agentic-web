@@ -1,0 +1,159 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cognizant-ai-labs/agentic-web/main/schemas/agent-manifest.v1.json",
+  "name": "Bean & Leaf Coffee",
+  "version": "1.0.0",
+  "spec_version": "0.1.0",
+  "description": "Neighborhood coffee shop autonomous agent network built on the Open Agentic Web specification. Zero-server-cost BYOK runtime, decentralized agent manifest, and open order board.",
+  "homepage": "index.html",
+  "runtime": "runtime.html",
+  "orderBoardUrl": "orders.json",
+  "front_man": "concierge-agent",
+  "allowed_peers": ["*"],
+  "agents": [
+    {
+      "id": "concierge-agent",
+      "name": "Coffee Concierge",
+      "role": "front_man",
+      "description": "Primary greeter and intelligent coordinator. Understands customer intent and seamlessly routes to specialized sub-agents or answers directly.",
+      "systemPrompt": "You are the Coffee Concierge and front host for Bean & Leaf Coffee. Greet customers warmly, answer general questions about the shop, and coordinate with specialized agents for Hours, Menu (with vegan/GF filters), Order placement, and Table Reservations. You represent the front_man agent of the Open Agentic Web network.",
+      "capabilities": ["greeting", "intent-routing", "shop-info", "coordination"],
+      "routes": {
+        "hours": "hours-agent",
+        "menu": "menu-agent",
+        "order": "order-agent",
+        "reservations": "reservation-agent"
+      }
+    },
+    {
+      "id": "hours-agent",
+      "name": "Hours Agent",
+      "role": "specialist",
+      "description": "Real-time store hours, holiday closures, and live open/closed status calculation.",
+      "systemPrompt": "You are the Hours Agent for Bean & Leaf Coffee. Answer questions about opening hours, holiday closures, and whether the shop is open now. Always reference the provided weekly schedule and holiday calendar data.",
+      "capabilities": ["hours", "open-status", "holidays", "schedule-lookup"],
+      "data": {
+        "timezone": "America/New_York",
+        "monday": "07:00-17:00",
+        "tuesday": "07:00-17:00",
+        "wednesday": "07:00-18:00",
+        "thursday": "07:00-18:00",
+        "friday": "07:00-19:00",
+        "saturday": "08:00-18:00",
+        "sunday": "08:00-16:00",
+        "holidays": ["2026-11-26", "2026-12-25", "2027-01-01"]
+      }
+    },
+    {
+      "id": "menu-agent",
+      "name": "Menu Agent",
+      "role": "specialist",
+      "description": "Item listings with granular dietary filters (vegan, gluten-free, dairy-free) and live pricing.",
+      "systemPrompt": "You are the Menu Agent for Bean & Leaf Coffee. Help customers browse artisanal drinks, specialty coffees, and fresh bakery items. Accurately filter items according to dietary preferences (vegan, gluten-free, dairy-free, vegetarian) and quote exact prices.",
+      "capabilities": ["browse-menu", "dietary-filter", "price-lookup", "nutrition-info"],
+      "data": {
+        "items": [
+          {
+            "id": "latte",
+            "name": "Espresso Latte",
+            "price": 4.50,
+            "category": "coffee",
+            "tags": ["espresso", "milk", "hot", "iced"],
+            "dietary": ["vegetarian"],
+            "description": "Double espresso shot with silky steamed whole milk and microfoam."
+          },
+          {
+            "id": "oat-latte",
+            "name": "Artisanal Oat Milk Latte",
+            "price": 5.00,
+            "category": "coffee",
+            "tags": ["espresso", "oat-milk", "popular"],
+            "dietary": ["vegan", "dairy-free", "vegetarian"],
+            "description": "House espresso blend with barista-grade Minor Figures oat milk."
+          },
+          {
+            "id": "americano",
+            "name": "Caffè Americano",
+            "price": 3.50,
+            "category": "coffee",
+            "tags": ["espresso", "classic"],
+            "dietary": ["vegan", "gluten-free", "dairy-free", "vegetarian"],
+            "description": "Rich espresso poured over hot filtered spring water."
+          },
+          {
+            "id": "matcha-latte",
+            "name": "Ceremonial Matcha Latte",
+            "price": 5.50,
+            "category": "tea",
+            "tags": ["matcha", "green-tea", "antioxidants"],
+            "dietary": ["vegan", "gluten-free", "dairy-free", "vegetarian"],
+            "description": "Single-origin Uji matcha whisked with oat milk and subtle agave."
+          },
+          {
+            "id": "croissant",
+            "name": "French Butter Croissant",
+            "price": 3.25,
+            "category": "bakery",
+            "tags": ["bakery", "pastry"],
+            "dietary": ["vegetarian"],
+            "description": "Laminated flaky pastry baked fresh every morning with Normandy butter."
+          },
+          {
+            "id": "banana-bread",
+            "name": "Walnut Banana Bread",
+            "price": 3.75,
+            "category": "bakery",
+            "tags": ["bakery", "toasted"],
+            "dietary": ["vegetarian"],
+            "description": "Moist caramelized banana bread with toasted California walnuts."
+          },
+          {
+            "id": "gf-muffin",
+            "name": "Gluten-Free Wild Blueberry Muffin",
+            "price": 4.25,
+            "category": "bakery",
+            "tags": ["bakery", "gluten-free"],
+            "dietary": ["gluten-free", "vegetarian"],
+            "description": "Baked with certified gluten-free almond flour and organic wild blueberries."
+          },
+          {
+            "id": "vegan-cookie",
+            "name": "Double Dark Chocolate Chunk Cookie",
+            "price": 3.50,
+            "category": "bakery",
+            "tags": ["bakery", "chocolate"],
+            "dietary": ["vegan", "dairy-free", "vegetarian"],
+            "description": "70% fair-trade dark chocolate chunks, coconut oil, and Maldon sea salt."
+          }
+        ]
+      }
+    },
+    {
+      "id": "order-agent",
+      "name": "Order Agent",
+      "role": "transactional",
+      "description": "Takes orders, calculates item totals, generates pickup tickets, and persists to the public order board.",
+      "systemPrompt": "You are the Order Agent for Bean & Leaf Coffee. Parse customer orders, confirm items and calculated totals, generate a unique pickup ticket number (#1000-#9999), estimate pickup time (usually 8-12 minutes), and record the transaction to the public order board (orders.json).",
+      "capabilities": ["take-order", "calculate-total", "generate-ticket", "publish-order"],
+      "orderBoardUrl": "orders.json"
+    },
+    {
+      "id": "reservation-agent",
+      "name": "Reservation Agent",
+      "role": "transactional",
+      "description": "Books tables, handles seating capacity, and reserves quiet workspaces or group tables.",
+      "systemPrompt": "You are the Reservation Agent for Bean & Leaf Coffee. Check seating capacity (24 total seats across 4 indoor and 2 patio tables), validate requested party sizes, and confirm reservations with a confirmation code.",
+      "capabilities": ["check-capacity", "book-table", "event-booking", "cancel-reservation"],
+      "data": {
+        "capacity": 24,
+        "tables": [
+          { "id": "t1", "name": "Window Nook (2 Seats)", "seats": 2, "location": "indoor" },
+          { "id": "t2", "name": "Espresso Bar High-Top (4 Seats)", "seats": 4, "location": "indoor" },
+          { "id": "t3", "name": "Quiet Corner Booth (2 Seats)", "seats": 2, "location": "indoor" },
+          { "id": "t4", "name": "Communal Library Table (6 Seats)", "seats": 6, "location": "indoor" },
+          { "id": "t5", "name": "Garden Patio Table A (4 Seats)", "seats": 4, "location": "outdoor" },
+          { "id": "t6", "name": "Garden Patio Table B (6 Seats)", "seats": 6, "location": "outdoor" }
+        ]
+      }
+    }
+  ]
+}
