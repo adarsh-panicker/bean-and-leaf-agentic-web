@@ -3,3 +3,5 @@ package.json
 package-lock.json
 videos/
 scripts/
+VOICEOVER_SCRIPT.md
+assets/*.mp4

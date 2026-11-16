@@ -166,28 +166,6 @@ This project strictly adheres to the **Worldwide Agentic Web MVP Specification**
 
 ---
 
-## 🎬 3-Minute Video Presentation Script
-
-*Use this script for the required Devpost video submission:*
-
-- **[0:00 - 0:45] The Problem & The Vision**:
-  - *"Hello! Welcome to Bean & Leaf Coffee. In today's web, deploying autonomous AI agents usually requires complex backends, cloud databases, and steep per-token API bills that small businesses can't afford."*
-  - *"With the Open Agentic Web specification, we’ve flipped this model on its head. Bean & Leaf is a neighborhood coffee shop running a 5-agent network entirely in the user’s browser—costing the shop exactly zero dollars in hosting and inference."*
-- **[0:45 - 1:40] Manifest & The 5-Agent Roster**:
-  - *Show `agent-manifest.json` on the landing page.*
-  - *"Our website exposes a standard `agent-manifest.json`. Any browser or external agent can discover our Coffee Concierge, Hours Agent, Menu Agent with vegan and gluten-free filters, Order Agent, and Reservation Agent."*
-  - *Open `runtime.html`.*
-  - *"Users bring their own model—Gemini, OpenAI, Anthropic, Ollama, or our instant zero-setup Mock engine. Watch as I ask for gluten-free options and place an order for an Oat Milk Latte. Notice how the Order Agent calculates the total and issues a verified digital pickup ticket."*
-- **[1:40 - 2:25] The Public State Board & Kitchen Display**:
-  - *Switch to the "Live Order Board" tab.*
-  - *"Here is our public state board (`orders.json`). The order we just placed is immediately live on the kitchen display system, ready for the barista to brew. Both humans and autonomous bots share this same open board."*
-- **[2:25 - 3:00] Cross-Site Agent Interoperability & Conclusion**:
-  - *Switch to the "Cross-Site Agent Interop" tab and click "Run Simulation".*
-  - *"Finally, the real power of the Open Agentic Web: cross-site agent orchestration. Watch an external personal assistant agent discover our manifest over HTTP, negotiate with our Order Agent, and autonomously secure a breakfast order without a human touching a button."*
-  - *"Bean & Leaf Coffee proves that the Open Agentic Web is open, secure, cost-free for small businesses, and ready today. Thank you!"*
-
----
-
 ## 📁 Repository File Map
 
 ```
