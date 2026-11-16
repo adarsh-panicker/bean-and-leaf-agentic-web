@@ -1,7 +1,8 @@
 # ☕ Bean & Leaf Coffee — Open Agentic Web
 
 > **A neighborhood coffee shop powered by an in-browser 5-agent network built for the Open Agentic Web.**  
-> *Zero host cost for AI inference • Fully client-side execution • Public decentralized manifest • Interoperable state board.*
+> *Zero host cost for AI inference • Fully client-side execution • Public decentralized manifest • Interoperable state board.*  
+> **Created by Adarsh Panicker**
 
 Built for the **[Open Agentic Web Challenge](https://cognizant-agenticweb.devpost.com/)**  
 *Cognizant AI Lab • Mozilla Otari • MIT Media Lab NANDA • Amazon Web Services (AWS)*
@@ -208,6 +209,7 @@ This project strictly adheres to the **Worldwide Agentic Web MVP Specification**
 
 ## 🏆 Credits & Open Source
 
+- **Author**: **Adarsh Panicker** ([GitHub Profile](https://github.com/adarsh-panicker))
 - **Challenge**: [Open Agentic Web Challenge on Devpost](https://cognizant-agenticweb.devpost.com/)
 - **Organizers**: Cognizant AI Lab, Mozilla Otari, MIT Media Lab NANDA, AWS
 - **License**: MIT Open Source
