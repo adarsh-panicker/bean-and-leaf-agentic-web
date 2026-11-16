@@ -8,6 +8,30 @@ Built for the **[Open Agentic Web Challenge](https://cognizant-agenticweb.devpos
 
 ---
 
+## 🌐 Live Deployment & Contest Links
+
+- 🚀 **Live Storefront & Agent Hub**: [https://adarsh-panicker.github.io/bean-and-leaf-agentic-web/](https://adarsh-panicker.github.io/bean-and-leaf-agentic-web/)
+- 💬 **Interactive Agent Network Runtime**: [https://adarsh-panicker.github.io/bean-and-leaf-agentic-web/runtime.html](https://adarsh-panicker.github.io/bean-and-leaf-agentic-web/runtime.html)
+- 📄 **Standard Agent Manifest**: [https://adarsh-panicker.github.io/bean-and-leaf-agentic-web/agent-manifest.json](https://adarsh-panicker.github.io/bean-and-leaf-agentic-web/agent-manifest.json)
+- 📋 **Public State Board (Live KDS)**: [https://adarsh-panicker.github.io/bean-and-leaf-agentic-web/orders.json](https://adarsh-panicker.github.io/bean-and-leaf-agentic-web/orders.json)
+- 🐙 **GitHub Repository**: [https://github.com/adarsh-panicker/bean-and-leaf-agentic-web](https://github.com/adarsh-panicker/bean-and-leaf-agentic-web)
+
+---
+
+## 📸 Live Interface & Verification Gallery
+
+| 1. Storefront & Machine Discovery | 2. Agent Chat & Pickup Ticket Generator |
+| :---: | :---: |
+| ![Bean & Leaf Storefront](assets/screenshots/storefront.png) | ![Agent Chat & Ticket Generation](assets/screenshots/agent_chat_ticket.png) |
+| *Public storefront with 5 agent cards and live manifest inspector* | *Coffee Concierge routing, BYOK dropdown, & verified pickup ticket* |
+
+| 3. Real-Time Public Order Board & KDS | 4. Cross-Site Agent Interop Simulator |
+| :---: | :---: |
+| ![Live Order Board & KDS](assets/screenshots/order_board.png) | ![Cross-Site Agent Interop Simulator](assets/screenshots/interop_simulator.png) |
+| *Real-time kitchen display showing customer and agent tickets* | *Simulated external agent executing protocol handshake* |
+
+---
+
 ## 🌟 Executive Summary
 
 Small neighborhood businesses (cafés, bookshops, local diners) have traditionally been excluded from the agentic AI revolution because running cloud-hosted agent backends incurs heavy per-token API fees and server maintenance costs.
@@ -171,7 +195,13 @@ This project strictly adheres to the **Worldwide Agentic Web MVP Specification**
 ├── index.html           # Public storefront with <link rel="agent-manifest">
 ├── runtime.html         # Multi-agent in-browser runtime, KDS board, & interop simulator
 ├── orders.json          # Public order board state
-└── README.md            # Complete architecture & judging guide
+├── README.md            # Complete architecture & judging guide
+└── assets/
+    └── screenshots/     # Live deployment verification screenshots
+        ├── storefront.png
+        ├── agent_chat_ticket.png
+        ├── order_board.png
+        └── interop_simulator.png
 ```
 
 ---
